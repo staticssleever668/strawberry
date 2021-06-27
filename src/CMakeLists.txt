@@ -71,6 +71,7 @@ set(SOURCES
   collection/collectionviewcontainer.cpp
   collection/collectiondirectorymodel.cpp
   collection/collectionfilterwidget.cpp
+  collection/collectionfilter.cpp
   collection/collectionplaylistitem.cpp
   collection/collectionquery.cpp
   collection/sqlrow.cpp
@@ -310,6 +311,7 @@ set(HEADERS
   collection/collectionviewcontainer.h
   collection/collectiondirectorymodel.h
   collection/collectionfilterwidget.h
+  collection/collectionfilter.h
   collection/savedgroupingmanager.h
   collection/groupbydialog.h
 
