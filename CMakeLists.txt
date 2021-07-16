@@ -311,6 +311,12 @@ if(NOT SPARKLE AND (APPLE OR WIN32))
   endif()
 endif()
 
+if(BUILD_WITH_QT6)
+  pkg_check_modules(LIBMYGPO libmygpo-qt6)
+else()
+  pkg_check_modules(LIBMYGPO libmygpo-qt5)
+endif()
+
 if(WIN32 AND NOT MSVC)
   # RC compiler
   string(REPLACE "gcc" "windres" CMAKE_RC_COMPILER_INIT ${CMAKE_C_COMPILER})
@@ -427,6 +433,9 @@ optional_component(MOODBAR ON "Moodbar"
   DEPENDS "fftw3" FFTW3_FOUND
   DEPENDS "gstreamer" HAVE_GSTREAMER
 )
+
+
+optional_component(PODCASTS ON "Podcasts support" DEPENDS "libmygpo" LIBMYGPO_FOUND)
 
 if(APPLE OR WIN32)
   option(USE_BUNDLE "Bundle dependencies" ON)
