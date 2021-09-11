@@ -3,1151 +3,198 @@ on: [push, pull_request]
 
 jobs:
 
-  build_source:
-    name: Create source tarball
-    runs-on: ubuntu-latest
-    container:
-      image: opensuse/leap:15.3
+  build-windows-msvc-qt6:
+    name: Build Windows MSVC Qt 6
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Update packages
-        run: zypper --non-interactive --gpg-auto-import-keys ref
-      - name: Install openSUSE dependencies
-        run: >
-            zypper --non-interactive --gpg-auto-import-keys install
-            lsb-release
-            rpm-build
-            git
-            tar
-            make
-            cmake
-            gcc
-            gcc-c++
-            gettext-tools
-            glibc-devel
-            libboost_headers-devel
-            boost-devel
-            glib2-devel
-            glib2-tools
-            dbus-1-devel
-            alsa-devel
-            libnotify-devel
-            libgnutls-devel
-            protobuf-devel
-            sqlite3-devel
-            libpulse-devel
-            gstreamer-devel
-            gstreamer-plugins-base-devel
-            vlc-devel
-            taglib-devel
-            libQt5Core-devel
-            libQt5Gui-devel
-            libQt5Gui-private-headers-devel
-            libQt5Widgets-devel
-            libQt5Concurrent-devel
-            libQt5Network-devel
-            libQt5Sql-devel
-            libQt5DBus-devel
-            libQt5Test-devel
-            libqt5-qtbase-common-devel
-            libQt5Sql5-sqlite
-            libqt5-linguist-devel
-            libqt5-qtx11extras-devel
-            libcdio-devel
-            libgpod-devel
-            libmtp-devel
-            libchromaprint-devel
-            desktop-file-utils
-            update-desktop-files
-            appstream-glib
-            hicolor-icon-theme
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: Create source tarball
-        working-directory: build
-        run: ../dist/scripts/maketarball.sh
 
-
-  build_opensuse_lp153_qt5:
-    name: Build openSUSE Leap 15.3 Qt 5
-    runs-on: ubuntu-latest
-    container:
-      image: opensuse/leap:15.3
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Add tagparser repo
-        run: zypper -n ar -c -f -n 'repo-tagparser' https://download.opensuse.org/repositories/home:/mkittler/openSUSE_Leap_15.3/ repo-tagparser
-      - name: Update packages
-        run: zypper --non-interactive --gpg-auto-import-keys ref
-      - name: Install openSUSE dependencies
-        run: >
-            zypper --non-interactive --gpg-auto-import-keys install
-            lsb-release
-            rpm-build
-            git
-            tar
-            make
-            cmake
-            gcc
-            gcc-c++
-            gettext-tools
-            glibc-devel
-            libboost_headers-devel
-            boost-devel
-            glib2-devel
-            glib2-tools
-            dbus-1-devel
-            alsa-devel
-            libnotify-devel
-            libgnutls-devel
-            protobuf-devel
-            sqlite3-devel
-            libpulse-devel
-            gstreamer-devel
-            gstreamer-plugins-base-devel
-            vlc-devel
-            taglib-devel
-            tagparser-devel
-            libQt5Core-devel
-            libQt5Gui-devel
-            libQt5Gui-private-headers-devel
-            libQt5Widgets-devel
-            libQt5Concurrent-devel
-            libQt5Network-devel
-            libQt5Sql-devel
-            libQt5DBus-devel
-            libQt5Test-devel
-            libqt5-qtbase-common-devel
-            libQt5Sql5-sqlite
-            libqt5-linguist-devel
-            libqt5-qtx11extras-devel
-            libcdio-devel
-            libgpod-devel
-            libmtp-devel
-            libchromaprint-devel
-            desktop-file-utils
-            update-desktop-files
-            appstream-glib
-            hicolor-icon-theme
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON -DBUILD_WITH_QT5=ON -DUSE_TAGLIB=ON -DUSE_TAGPARSER=ON
-      - name: Create source tarball
-        working-directory: build
-        run: ../dist/scripts/maketarball.sh
-      - name: Create RPM build sources directories
-        run: mkdir -p ~/rpmbuild/SOURCES /usr/src/packages/SOURCES
-      - name: Copy source tarball
-        working-directory: build
-        run: cp strawberry-*.tar.xz /usr/src/packages/SOURCES/
-      - name: Build RPM
-        working-directory: build
-        run: rpmbuild -ba ../dist/unix/strawberry.spec
-
-
-  build_opensuse_lp153_qt6:
-    name: Build openSUSE Leap 15.3 Qt 6
-    runs-on: ubuntu-latest
-    container:
-      image: opensuse/leap:15.3
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Add tagparser repo
-        run: zypper -n ar -c -f -n 'repo-tagparser' https://download.opensuse.org/repositories/home:/mkittler/openSUSE_Leap_15.3/ repo-tagparser
-      - name: Add Qt 6 repo
-        run: zypper -n ar -c -f -n 'repo-qt6' https://download.opensuse.org/repositories/home:/jonaski:/qt6/openSUSE_Leap_15.3/ repo-qt6
-      - name: Update packages
-        run: zypper --non-interactive --gpg-auto-import-keys ref
-      - name: Install openSUSE dependencies
-        run: >
-            zypper --non-interactive --gpg-auto-import-keys install
-            lsb-release
-            rpm-build
-            git
-            tar
-            make
-            cmake
-            gcc10
-            gcc10-c++
-            gettext-tools
-            glibc-devel
-            libboost_headers-devel
-            boost-devel
-            glib2-devel
-            glib2-tools
-            dbus-1-devel
-            alsa-devel
-            libnotify-devel
-            libgnutls-devel
-            protobuf-devel
-            sqlite3-devel
-            libpulse-devel
-            gstreamer-devel
-            gstreamer-plugins-base-devel
-            vlc-devel
-            taglib-devel
-            tagparser-devel
-            qt6-core-devel
-            qt6-gui-devel
-            qt6-gui-private-devel
-            qt6-widgets-devel
-            qt6-concurrent-devel
-            qt6-network-devel
-            qt6-sql-devel
-            qt6-dbus-devel
-            qt6-test-devel
-            qt6-base-common-devel
-            qt6-sql-sqlite
-            qt6-linguist-devel
-            libcdio-devel
-            libgpod-devel
-            libmtp-devel
-            libchromaprint-devel
-            desktop-file-utils
-            update-desktop-files
-            appstream-glib
-            hicolor-icon-theme
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON -DBUILD_WITH_QT6=ON -DUSE_TAGLIB=ON -DUSE_TAGPARSER=ON
-      - name: Create source tarball
-        working-directory: build
-        run: ../dist/scripts/maketarball.sh
-      - name: Create RPM build sources directories
-        run: mkdir -p ~/rpmbuild/SOURCES /usr/src/packages/SOURCES
-      - name: Copy source tarball
-        working-directory: build
-        run: cp strawberry-*.tar.xz /usr/src/packages/SOURCES/
-      - name: Build RPM
-        working-directory: build
-        env:
-          CC: gcc-10
-          CXX: g++-10
-        run: rpmbuild -ba ../dist/unix/strawberry.spec
-
-
-  build_fedora_33:
-    name: Build Fedora 33
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:33
-    env:
-      RPM_BUILD_NCPUS: "2"
-    steps:
-      - uses: actions/checkout@v1.2.0
-
-      - name: Update packages
-        run: yum update --assumeyes
-
-      - name: Upgrade packages
-        run: yum upgrade --assumeyes
-
-      - name: Install Fedora dependencies
-        run: >
-            dnf install --assumeyes
-            @development-tools
-            redhat-lsb-core
-            git
-            glibc
-            gcc-c++
-            rpmdevtools
-            make
-            cmake
-            pkgconfig
-            glib
-            man
-            tar
-            gettext
-            openssh
-            boost-devel
-            dbus-devel
-            protobuf-devel
-            protobuf-compiler
-            sqlite-devel
-            alsa-lib-devel
-            pulseaudio-libs-devel
-            libnotify-devel
-            gnutls-devel
-            qt5-qtbase-devel
-            qt5-qtbase-private-devel
-            qt5-qttools-devel
-            qt5-qtx11extras-devel
-            gstreamer1-devel
-            gstreamer1-plugins-base-devel
-            taglib-devel
-            libcdio-devel
-            libgpod-devel
-            libmtp-devel
-            libchromaprint-devel
-            fftw-devel
-            desktop-file-utils
-            libappstream-glib
-            hicolor-icon-theme
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: Create source tarball
-        working-directory: build
-        run: ../dist/scripts/maketarball.sh
-      - name: Create RPM build sources directories
-        working-directory: build
-        run: mkdir -p ~/rpmbuild/SOURCES /usr/src/packages/SOURCES
-      - name: Copy source tarball
-        working-directory: build
-        run: cp strawberry-*.tar.xz ~/rpmbuild/SOURCES/
-      - name: Build RPM
-        working-directory: build
-        run: rpmbuild -ba ../dist/unix/strawberry.spec
-
-
-  build_fedora_34:
-    name: Build Fedora 34
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:34
-    env:
-      RPM_BUILD_NCPUS: "2"
-    steps:
-      - uses: actions/checkout@v1.2.0
-
-      - name: Update packages
-        run: yum update --assumeyes
-
-      - name: Upgrade packages
-        run: yum upgrade --assumeyes
-
-      - name: Install Fedora dependencies
-        run: >
-            dnf install --assumeyes
-            @development-tools
-            redhat-lsb-core
-            git
-            glibc
-            gcc-c++
-            rpmdevtools
-            make
-            cmake
-            pkgconfig
-            glib
-            man
-            tar
-            gettext
-            openssh
-            boost-devel
-            dbus-devel
-            protobuf-devel
-            protobuf-compiler
-            sqlite-devel
-            alsa-lib-devel
-            pulseaudio-libs-devel
-            libnotify-devel
-            gnutls-devel
-            qt6-qtbase-devel
-            qt6-qtbase-private-devel
-            qt6-qttools-devel
-            gstreamer1-devel
-            gstreamer1-plugins-base-devel
-            taglib-devel
-            libcdio-devel
-            libgpod-devel
-            libmtp-devel
-            libchromaprint-devel
-            fftw-devel
-            desktop-file-utils
-            libappstream-glib
-            hicolor-icon-theme
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: Create source tarball
-        working-directory: build
-        run: ../dist/scripts/maketarball.sh
-      - name: Create RPM build sources directories
-        working-directory: build
-        run: mkdir -p ~/rpmbuild/SOURCES /usr/src/packages/SOURCES
-      - name: Copy source tarball
-        working-directory: build
-        run: cp strawberry-*.tar.xz ~/rpmbuild/SOURCES/
-      - name: Build RPM
-        working-directory: build
-        run: rpmbuild -ba ../dist/unix/strawberry.spec
-
-
-  build_debian_buster:
-    name: Build Debian Buster
-    runs-on: ubuntu-latest
-    container:
-      image: debian:buster
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Debian dependencies
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            gcc
-            pkg-config
-            fakeroot
-            gettext
-            lsb-release
-            libglib2.0-dev
-            dpkg-dev
-            libdbus-1-dev
-            libboost-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build_debian_bullseye:
-    name: Build Debian Bullseye
-    runs-on: ubuntu-latest
-    container:
-      image: debian:bullseye
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Debian dependencies
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            gcc
-            pkg-config
-            fakeroot
-            gettext
-            lsb-release
-            libglib2.0-dev
-            dpkg-dev
-            libdbus-1-dev
-            libboost-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build_ubuntu_bionic:
-    name: Build Ubuntu Bionic
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:bionic
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Ubuntu dependencies
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            pkg-config
-            gcc
-            fakeroot
-            wget
-            curl
-            gettext
-            lsb-release
-            dpkg-dev
-            libglib2.0-dev
-            libboost-dev
-            libdbus-1-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            libgstreamer-plugins-good1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build_ubuntu_focal:
-    name: Build Ubuntu Focal
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:focal
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Ubuntu dependencies
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            pkg-config
-            gcc
-            fakeroot
-            wget
-            curl
-            gettext
-            lsb-release
-            dpkg-dev
-            libglib2.0-dev
-            libboost-dev
-            libdbus-1-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            libgstreamer-plugins-good1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build_ubuntu_groovy:
-    name: Build Ubuntu Groovy
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:groovy
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Ubuntu dependencies
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            pkg-config
-            gcc
-            fakeroot
-            wget
-            curl
-            gettext
-            lsb-release
-            dpkg-dev
-            libglib2.0-dev
-            libboost-dev
-            libdbus-1-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            libgstreamer-plugins-good1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build_ubuntu_hirsute:
-    name: Build Ubuntu Hirsute
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:hirsute
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install Ubuntu dependencies
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: >
-            apt-get update && apt-get install -y
-            build-essential
-            dh-make
-            ssh
-            git
-            make
-            cmake
-            pkg-config
-            gcc
-            fakeroot
-            wget
-            curl
-            gettext
-            lsb-release
-            dpkg-dev
-            libglib2.0-dev
-            libboost-dev
-            libdbus-1-dev
-            libprotobuf-dev
-            protobuf-compiler
-            libsqlite3-dev
-            libgnutls28-dev
-            libasound2-dev
-            libpulse-dev
-            libtag1-dev
-            qtbase5-dev
-            qtbase5-dev-tools
-            qtbase5-private-dev
-            qttools5-dev
-            libqt5x11extras5-dev
-            libgstreamer1.0-dev
-            libgstreamer-plugins-base1.0-dev
-            libgstreamer-plugins-good1.0-dev
-            gstreamer1.0-alsa
-            gstreamer1.0-pulseaudio
-            libchromaprint-dev
-            libfftw3-dev
-            libcdio-dev
-            libmtp-dev
-            libgpod-dev
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WERROR=ON
-      - name: make deb
-        shell: bash
-        run: dpkg-buildpackage -b -d -uc -us -nc -j2
-
-
-  build-macos-qt5:
-    name: Build macOS Qt 5
-    runs-on: macos-10.15
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install packages
-        run: >
-          brew install
-          wget
-          glib
-          pkgconfig
-          boost
-          libffi
-          protobuf
-          protobuf-c
-          qt5
-          gettext
-          gnutls
-          fftw
-          sqlite
-          chromaprint
-          gstreamer
-          gst-plugins-base
-          gst-plugins-good
-          gst-plugins-bad
-          gst-plugins-ugly
-          gst-libav
-          libcdio
-          libmtp
-          create-dmg
-          taglib
-          libplist
-          gdk-pixbuf
-
-      - name: Install Sparkle
-        run: brew install --cask sparkle
-
-      - name: Link Sparkle
-        shell: bash
-        run: |
-          sudo ln -s /usr/local/Caskroom/sparkle/$(ls /usr/local/Caskroom/sparkle | head -n1) /usr/local/opt/sparkle
-
-      - name: Build libgpod
-        shell: bash
-        env:
-          PERL_MM_USE_DEFAULT: 1
-        run: |
-          git clone https://github.com/strawberrymusicplayer/strawberry-libgpod
-          cd strawberry-libgpod
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make -j 4
-          sudo make install
-
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        env:
-          MACOSX_DEPLOYMENT_TARGET: 10.15
-          PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
-          GIO_EXTRA_MODULES: /usr/local/lib/gio/modules
-          GST_PLUGIN_SCANNER: /usr/local/opt/gstreamer/libexec/gstreamer-1.0/gst-plugin-scanner
-          GST_PLUGIN_PATH: /usr/local/lib/gstreamer-1.0
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_WITH_QT5=ON -DBUILD_WERROR=ON -DUSE_BUNDLE=ON -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/lib/cmake
-      - name: Build
-        working-directory: build
-        shell: bash
-        run: cmake --build . --config Debug --parallel 4
-      - name: Install
-        working-directory: build
-        shell: bash
-        run: make install
-      - name: Manually copy files not handled by macdeployqt
-        working-directory: build
-        shell: bash
-        run: |
-          mkdir -p strawberry.app/Contents/Frameworks/
-          cp -v /usr/local/lib/libbrotlicommon.1.dylib strawberry.app/Contents/Frameworks/
-          cp -v /usr/local/opt/icu4c/lib/libicudata.69.dylib strawberry.app/Contents/Frameworks/
-          cp -v /usr/local/lib/libgpod.dylib strawberry.app/Contents/Frameworks/
-          install_name_tool -change "@rpath/libgpod.dylib" "@loader_path/../Frameworks/libgpod.dylib" strawberry.app/Contents/MacOS/strawberry
-          # Sparkle
-          mkdir -p strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/A
-          cp -v /usr/local/opt/sparkle/Sparkle.framework/Sparkle strawberry.app/Contents/Frameworks/Sparkle.framework/
-          cp -v /usr/local/opt/sparkle/Sparkle.framework/Versions/A/Sparkle strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/A/
-          cp -v -R /usr/local/opt/sparkle/Sparkle.framework/Versions/Current strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/
-      - name: Deploy
-        working-directory: build
-        shell: bash
-        run: make deploy
-      - name: Deploy check
-        working-directory: build
-        shell: bash
-        run: make deploycheck
-      - name: Create DMG
-        working-directory: build
-        shell: bash
-        run: make dmg
-
-  build-macos-qt6:
-    name: Build macOS Qt 6
-    runs-on: macos-10.15
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Install packages
-        run: >
-          brew install
-          wget
-          glib
-          pkgconfig
-          boost
-          libffi
-          protobuf
-          protobuf-c
-          qt6
-          gettext
-          gnutls
-          fftw
-          sqlite
-          chromaprint
-          gstreamer
-          gst-plugins-base
-          gst-plugins-good
-          gst-plugins-bad
-          gst-plugins-ugly
-          gst-libav
-          libcdio
-          libmtp
-          create-dmg
-          taglib
-          libplist
-          gdk-pixbuf
-
-      - name: Install Sparkle
-        run: brew install --cask sparkle
-
-      - name: Link Sparkle
-        shell: bash
-        run: |
-          sudo ln -s /usr/local/Caskroom/sparkle/$(ls /usr/local/Caskroom/sparkle | head -n1) /usr/local/opt/sparkle
-
-      - name: Build libgpod
-        shell: bash
-        env:
-          PERL_MM_USE_DEFAULT: 1
-        run: |
-          git clone https://github.com/strawberrymusicplayer/strawberry-libgpod
-          cd strawberry-libgpod
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make -j 4
-          sudo make install
-
-      - name: Remove problematic files
-        shell: bash
-        run: sudo rm -rf /usr/local/opt/qt6/share/qt/plugins/virtualkeyboard /usr/local/opt/qt6/share/qt/plugins/platforminputcontexts
-
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-      - name: Configure CMake
-        shell: bash
-        env:
-          MACOSX_DEPLOYMENT_TARGET: 10.15
-          PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
-          GIO_EXTRA_MODULES: /usr/local/lib/gio/modules
-          GST_PLUGIN_SCANNER: /usr/local/opt/gstreamer/libexec/gstreamer-1.0/gst-plugin-scanner
-          GST_PLUGIN_PATH: /usr/local/lib/gstreamer-1.0
-        working-directory: build
-        run: cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_QT6=ON -DBUILD_WERROR=ON -DUSE_BUNDLE=ON -DCMAKE_PREFIX_PATH=/usr/local/opt/qt6/lib/cmake
-      - name: Build
-        working-directory: build
-        shell: bash
-        run: cmake --build . --config Release --parallel 4
-      - name: Install
-        working-directory: build
-        shell: bash
-        run: make install
-      - name: Manually copy files not handled by macdeployqt
-        working-directory: build
-        shell: bash
-        run: |
-          mkdir -p strawberry.app/Contents/Frameworks/
-          cp -v /usr/local/lib/libbrotlicommon.1.dylib strawberry.app/Contents/Frameworks/
-          # Sparkle
-          mkdir -p strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/A
-          cp -v /usr/local/opt/sparkle/Sparkle.framework/Sparkle strawberry.app/Contents/Frameworks/Sparkle.framework/
-          cp -v /usr/local/opt/sparkle/Sparkle.framework/Versions/A/Sparkle strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/A/
-          cp -v -R /usr/local/opt/sparkle/Sparkle.framework/Versions/Current strawberry.app/Contents/Frameworks/Sparkle.framework/Versions/
-      - name: Deploy
-        working-directory: build
-        shell: bash
-        run: make deploy
-      - name: Deploy check
-        working-directory: build
-        shell: bash
-        run: make deploycheck
-      - name: Create DMG
-        working-directory: build
-        shell: bash
-        run: make dmg
-      - uses: actions/upload-artifact@v2
+      - uses: ilammy/msvc-dev-cmd@v1
         with:
-          name: upload-macos
-          path: build/strawberry-*.dmg
+          arch: amd64
+          toolset: 14.29
 
+      #- name: Install boost
+      #  uses: MarkusJx/install-boost@v2.0.0
+      #  with:
+      #    boost_version: 1.73.0
 
-  build-windows-mingw-qt5:
-    name: Build Windows MinGW Qt 5
-    runs-on: ubuntu-latest
-    container:
-      image: jonaski/strawberry-mxe-x86_64
-    steps:
+      - name: Install protobuf
+        run: vcpkg install protobuf
+
+      - name: Copy protobuf headers
+        run: xcopy /s c:\vcpkg\packages\protobuf_x64-windows\include\* c:\gstreamer\1.0\msvc_x86_64\include\
+
+      - name: Install Qt 6
+        uses: jurplel/install-qt-action@v2.14.0
+        with:
+          version: 6.1.3
+          modules: qtbase qttools
+
+      - name: Download Boost
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "Boost [this](https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.zip)!"
+          target: downloads/
+          auto-match: true
+
+      #- name: Download Protobuf
+      #  uses: suisei-cn/actions-download-file@v1
+      #  with:
+      #    url: "Protobuf [this](https://github.com/protocolbuffers/protobuf/releases/download/v3.18.0-rc2/protobuf-cpp-3.18.0-rc-2.zip)!"
+      #    target: downloads/
+      #    auto-match: true
+
+      - name: Download SQLite
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "SQLite [this](https://www.sqlite.org/2021/sqlite-autoconf-3360000.tar.gz)!"
+          target: downloads/
+          auto-match: true
+
+      - name: Download GStreamer
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "GStreamer [this](https://gstreamer.freedesktop.org/data/pkg/windows/1.18.5/msvc/gstreamer-1.0-msvc-x86_64-1.18.5.msi)!"
+          target: downloads/
+          auto-match: true
+
+      - name: Download GStreamer Devel
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "GStreamer Devel [this](https://gstreamer.freedesktop.org/data/pkg/windows/1.18.5/msvc/gstreamer-1.0-devel-msvc-x86_64-1.18.5.msi)!"
+          target: downloads/
+          auto-match: true
+
+      - name: Download GnuTLS
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "GnutTLS [this](https://github.com/ShiftMediaProject/gnutls/releases/download/3.7.2/libgnutls_3.7.2_msvc14.zip)!"
+          target: downloads/
+          auto-match: true
+
+      - name: Download TagLib
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: "TagLib [this](https://taglib.org/releases/taglib-1.12.tar.gz)!"
+          target: downloads/
+          auto-match: true
+
+      - name: Extract Boost
+        working-directory: D:\a\strawberry\strawberry
+        run: 7z x d:\a\strawberry\strawberry\downloads\boost_1_77_0.zip
+
+      - name: Copy Boost
+        shell: bash
+        run: cp -r /d/a/strawberry/strawberry/boost_1_77_0/boost /c/gstreamer/1.0/msvc_x86_64/include/
+
+      - name: Check Boost
+        run: dir c:\gstreamer\1.0\msvc_x86_64\include\boost
+
+      #- name: Extract Protobuf
+      #  working-directory: D:\a\strawberry\strawberry
+      #  run: 7z x d:\a\strawberry\strawberry\downloads\protobuf-cpp-3.18.0-rc-2.zip
+
+      - name: Extract SQLite
+        working-directory: D:\a\strawberry\strawberry
+        shell: bash
+        run: tar -xvf /d/a/strawberry/strawberry/downloads/sqlite-autoconf-3360000.tar.gz
+
+      - name: Grant Full Access to c:\windows\temp directory
+        run: icacls "C:\Windows\Temp" /q /c /t /grant Users:F /T
+
+      - name: Install GStreamer
+        working-directory: D:\a\strawberry\strawberry\downloads
+        run: msiexec /a D:\a\strawberry\strawberry\downloads\gstreamer-1.0-msvc-x86_64-1.18.5.msi /passive /qn
+
+      - name: Wait for GStreamer installation to complete
+        run: Start-Sleep -s 20
+        shell: powershell
+
+      - name: Install GStreamer Devel
+        working-directory: D:\a\strawberry\strawberry\downloads
+        run: msiexec /a D:\a\strawberry\strawberry\downloads\gstreamer-1.0-devel-msvc-x86_64-1.18.5.msi /passive /qn
+
+      - name: Wait for GStreamer Devel installation to complete
+        run: Start-Sleep -s 30
+        shell: powershell
+
+      - name: Extract GnuTLS
+        working-directory: D:\a\strawberry\strawberry
+        run: |
+          mkdir gnutls
+          cd gnutls
+          7z x d:\a\strawberry\strawberry\downloads\libgnutls_3.7.2_msvc14.zip
+          xcopy /s /y bin\x64\*.* c:\gstreamer\1.0\msvc_x86_64\bin\
+          xcopy /s /y lib\x64\*.* c:\gstreamer\1.0\msvc_x86_64\lib\
+          xcopy /s /y include\* c:\gstreamer\1.0\msvc_x86_64\include\
+          xcopy /s /y include\* c:\gstreamer\1.0\msvc_x86_64\include\
+
+      - name: Extract TagLib
+        working-directory: D:\a\strawberry\strawberry
+        shell: bash
+        run: tar -xvf /d/a/strawberry/strawberry/downloads/taglib-1.12.tar.gz
+
+      - name: Fix pkg files
+        shell: bash
+        run: |
+          sed -i 's/c:\/projects\/repos\/cerbero.git\/1.18\/build\/dist/c:\/gstreamer\/1.0/g' /c/gstreamer/1.0/msvc_x86_64/lib/pkgconfig/*.pc
+          cp C:/vcpkg/packages/protobuf_x86-windows/lib/pkgconfig/protobuf.pc /c/gstreamer/1.0/msvc_x86_64/lib/pkgconfig/
+
+      #- name: Compile Protobuf
+      #  env:
+      #    CL: "/MP"
+      #  working-directory: D:\a\strawberry\strawberry\protobuf-3.18.0-rc-2
+      #  run: |
+      #    cd cmake
+      #    mkdir build
+      #    cd build
+      #    cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="d:/a/strawberry/strawberry/protobuf" -Dprotobuf_BUILD_TESTS=OFF
+      #    nmake
+      #    cmake --install .
+      #    copy D:\a\strawberry\strawberry\protobuf-3.18.0-rc-2\cmake\build\protobuf.pc c:\gstreamer\1.0\msvc_x86_64\lib\pkgconfig\
+
+      - name: Compile SQlite
+        env:
+          CL: "/MP"
+        working-directory: D:\a\strawberry\strawberry\sqlite-autoconf-3360000
+        run: nmake /f Makefile.msc
+
+      - name: Check SQlite
+        run: dir D:\a\strawberry\strawberry\sqlite-autoconf-3360000
+
+      - name: Copy SQLite
+        run: |
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\*.h c:\gstreamer\1.0\msvc_x86_64\include\
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\*.lib c:\gstreamer\1.0\msvc_x86_64\lib\
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\*.dll c:\gstreamer\1.0\msvc_x86_64\lib\
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\*.lib c:\gstreamer\1.0\msvc_x86_64\bin\
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\*.dll c:\gstreamer\1.0\msvc_x86_64\bin\
+
+      - name: Compile TagLib
+        env:
+          CL: "/MP"
+        working-directory: D:\a\strawberry\strawberry\taglib-1.12
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="c:\gstreamer\1.0\msvc_x86_64"
+          nmake
+          cmake --install .
+
       - uses: actions/checkout@v1.2.0
 
-      - name: Create Build Environment
+      - name: Remove find_package(Boost)
         shell: bash
+        run: sed -i 's/find_package(Boost.*//g' /d/a/strawberry/strawberry/CMakeLists.txt
+
+      - name: Create Build Environment
         run: cmake -E make_directory build
 
-      - name: Link MXE directory
-        shell: bash
-        run: ln -s /usr/src/strawberry-mxe ~/mxe-shared
-
       - name: Run CMake
-        shell: bash
-        env:
-          PKG_CONFIG_PATH: /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/lib/pkgconfig
         working-directory: build
         run: >
           cmake ..
-          -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-x86_64-w64-mingw32-shared.cmake
           -DCMAKE_BUILD_TYPE=Release
-          -DBUILD_WITH_QT5=ON
-          -DBUILD_WERROR=OFF
-          -DARCH=x86_64
-          -DENABLE_WIN32_CONSOLE=OFF
-          -DENABLE_DBUS=OFF
-          -DENABLE_LIBGPOD=OFF
-          -DENABLE_LIBMTP=OFF
-          -DProtobuf_PROTOC_EXECUTABLE=/usr/src/strawberry-mxe/usr/x86_64-pc-linux-gnu/bin/protoc
-
-      - name: Run Make
-        working-directory: build
-        run: cmake --build . --config Release --parallel $(nproc)
-
-      - name: Create directories
-        working-directory: build
-        run: mkdir -p gio-modules platforms sqldrivers imageformats styles gstreamer-plugins nsisplugins
-
-      - name: Copy GIO modules
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/lib/gio/modules/libgiognutls.dll ${GITHUB_WORKSPACE}/build/gio-modules/
-
-      - name: Copy Qt platform plugins
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms/qwindows.dll ${GITHUB_WORKSPACE}/build/platforms/
-
-      - name: Copy Qt styles
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/styles/qwindowsvistastyle.dll ${GITHUB_WORKSPACE}/build/styles/
-
-      - name: Copy Qt SQL drivers
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/sqldrivers/qsqlite.dll ${GITHUB_WORKSPACE}/build/sqldrivers/
-
-      - name: Copy Qt imageformats
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/imageformats/{qgif.dll,qico.dll,qjpeg.dll} ${GITHUB_WORKSPACE}/build/imageformats/
-
-      - name: Copy gstreamer plugins
-        working-directory: build
-        run: >
-          cp
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstapp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstcoreelements.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioconvert.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiofx.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiomixer.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioparsers.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiorate.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioresample.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiotestsrc.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstautodetect.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstplayback.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstvolume.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstspectrum.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstequalizer.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstreplaygain.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttypefindfunctions.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstgio.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstdirectsound.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwasapi.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstpbtypes.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstapetag.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsticydemux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstid3demux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttaglib.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttcp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstudp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstsoup.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstcdio.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstrtp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstrtsp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstflac.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwavparse.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwavpack.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstogg.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstvorbis.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstopus.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstopusparse.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstspeex.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstlame.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaiff.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstfaac.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstfaad.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstisomp4.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstasf.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstasfmux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstlibav.dll
-          ${GITHUB_WORKSPACE}/build/gstreamer-plugins/
-
-      - name: Copy extra binaries
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/{sqlite3.exe,killproc.exe,gst-launch-1.0.exe,gst-discoverer-1.0.exe} .
-
-      - name: Copy dependencies
-        working-directory: build
-        run: >
-          /usr/src/strawberry-mxe/tools/copydlldeps.sh
-          -c
-          -d .
-          -F .
-          -F ./platforms
-          -F ./styles
-          -F ./sqldrivers
-          -F ./imageformats
-          -F ./gstreamer-plugins
-          -R /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared
-
-      - name: Strip binaries
-        working-directory: build
-        run: find . -type f \( -iname \*.dll -o -iname \*.exe \) -exec /usr/src/strawberry-mxe/usr/bin/x86_64-w64-mingw32.shared-strip {} \;
-
-      - name: Copy nsis files
-        working-directory: build
-        run: cp ${GITHUB_WORKSPACE}/dist/windows/*.nsi ${GITHUB_WORKSPACE}/dist/windows/*.nsh ${GITHUB_WORKSPACE}/dist/windows/*.ico .
-
-      - name: Copy COPYING license file
-        working-directory: build
-        run: cp ${GITHUB_WORKSPACE}/COPYING .
-
-      - name: Build Windows installer
-        working-directory: build
-        run: makensis strawberry.nsi
-
-  build-windows-mingw-qt6:
-    name: Build Windows MinGW Qt 6
-    runs-on: ubuntu-latest
-    container:
-      image: jonaski/strawberry-mxe-x86_64
-    steps:
-      - uses: actions/checkout@v1.2.0
-
-      - name: Create Build Environment
-        shell: bash
-        run: cmake -E make_directory build
-
-      - name: Link MXE directory
-        shell: bash
-        run: ln -s /usr/src/strawberry-mxe ~/mxe-shared
-
-      - name: Run CMake
-        shell: bash
-        env:
-          PKG_CONFIG_PATH: /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/lib/pkgconfig
-        working-directory: build
-        run: >
-          cmake ..
-          -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-x86_64-w64-mingw32-shared.cmake
-          -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_PREFIX_PATH=/usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6
           -DBUILD_WITH_QT6=ON
           -DBUILD_WERROR=OFF
           -DARCH=x86_64
@@ -1155,7 +202,20 @@ jobs:
           -DENABLE_DBUS=OFF
           -DENABLE_LIBGPOD=OFF
           -DENABLE_LIBMTP=OFF
-          -DProtobuf_PROTOC_EXECUTABLE=/usr/src/strawberry-mxe/usr/x86_64-pc-linux-gnu/bin/protoc
+          -DUSE_TAGLIB=ON
+          -DPKG_CONFIG_EXECUTABLE=C:/gstreamer/1.0/msvc_x86_64/bin/pkg-config.exe
+          -DSQLITE_INCLUDE_DIRS=c:/gstreamer/1.0/msvc_x86_64/lib/include
+          -DSQLITE_LIBRARY_DIRS=c:/gstreamer/1.0/msvc_x86_64/lib
+          -DSQLITE_LIBRARIES=c:/gstreamer/1.0/msvc_x86_64/lib/sqlite3.lib
+          -DGNUTLS_LIBRARY=c:/gstreamer/1.0/msvc_x86_64/lib/gnutls.lib
+          -DGNUTLS_INCLUDE_DIR=c:/gstreamer/1.0/msvc_x86_64/include
+          -DGNUTLS_INCLUDE_DIRS=c:/gstreamer/1.0/msvc_x86_64/include
+          -DBoost_INCLUDE_DIR=c:/gstreamer/1.0/msvc_x86_64/include
+          -DBoost_INCLUDE_DIRS=c:/gstreamer/1.0/msvc_x86_64/include
+          -DProtobuf_LIBRARY=c:/vcpkg/packages/protobuf_x64-windows/lib/libprotobuf.lib
+          -DProtobuf_INCLUDE_DIR=c:/vcpkg/packages/protobuf_x64-windows/include
+          -DProtobuf_INCLUDE_DIRS=c:/vcpkg/packages/protobuf_x64-windows/include
+          -DPROTOBUF_PROTOC_EXECUTABLE=c:/vcpkg/packages/protobuf_x64-windows/tools/protobuf/protoc.exe
 
       - name: Run Make
         working-directory: build
@@ -1163,160 +223,122 @@ jobs:
 
       - name: Create directories
         working-directory: build
-        run: mkdir -p gio-modules platforms sqldrivers tls imageformats styles gstreamer-plugins nsisplugins
+        run: mkdir gio-modules platforms styles tls sqldrivers imageformats gstreamer-plugins nsisplugins
 
-      - name: Copy GIO modules
-        working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/lib/gio/modules/libgiognutls.dll ${GITHUB_WORKSPACE}/build/gio-modules/
+      #- name: Copy GIO modules
+      #  working-directory: build
+      #  run: copy C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\libgiognutls.dll ${GITHUB_WORKSPACE}/build/gio-modules/
 
       - name: Copy Qt platform plugins
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6/plugins/platforms/qwindows.dll ${GITHUB_WORKSPACE}/build/platforms/
+        run: copy d:/a/strawberry/qt/plugins/platforms/qwindows.dll ${GITHUB_WORKSPACE}/build/platforms/
 
       - name: Copy Qt styles
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6/plugins/styles/qwindowsvistastyle.dll ${GITHUB_WORKSPACE}/build/styles/
+        run: copy d:/a/strawberry/qt//plugins/styles/qwindowsvistastyle.dll ${GITHUB_WORKSPACE}/build/styles/
 
       - name: Copy Qt TLS plugins
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6/plugins/tls/qopensslbackend.dll ${GITHUB_WORKSPACE}/build/tls/
+        run: copy d:/a/strawberry/qt//plugins/tls/*.dll ${GITHUB_WORKSPACE}/build/tls/
 
       - name: Copy Qt SQL drivers
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6/plugins/sqldrivers/qsqlite.dll ${GITHUB_WORKSPACE}/build/sqldrivers/
+        run: copy d:/a/strawberry/qt//plugins/sqldrivers/qsqlite.dll ${GITHUB_WORKSPACE}/build/sqldrivers/
 
-      - name: Copy Qt imageformats
+      - name: Copy Qt imageformats plugins
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/qt6/plugins/imageformats/{qgif.dll,qico.dll,qjpeg.dll} ${GITHUB_WORKSPACE}/build/imageformats/
+        run: copy d:/a/strawberry/qt//plugins/imageformats/*.dll ${GITHUB_WORKSPACE}/build/imageformats/
 
       - name: Copy gstreamer plugins
         working-directory: build
         run: >
-          cp
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstapp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstcoreelements.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioconvert.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiofx.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiomixer.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioparsers.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiorate.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudioresample.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaudiotestsrc.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstautodetect.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstplayback.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstvolume.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstspectrum.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstequalizer.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstreplaygain.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttypefindfunctions.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstgio.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstdirectsound.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwasapi.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstpbtypes.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstapetag.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsticydemux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstid3demux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttaglib.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgsttcp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstudp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstsoup.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstcdio.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstrtp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstrtsp.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstflac.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwavparse.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstwavpack.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstogg.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstvorbis.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstopus.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstopusparse.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstspeex.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstlame.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstaiff.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstfaac.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstfaad.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstisomp4.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstasf.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstasfmux.dll
-          /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/gstreamer-1.0/libgstlibav.dll
+          copy
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstapp.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstcoreelements.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudioconvert.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudiofx.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudiomixer.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudioparsers.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudiorate.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudioresample.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaudiotestsrc.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstautodetect.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstplayback.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstvolume.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstspectrum.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstequalizer.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstreplaygain.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gsttypefindfunctions.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstgio.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstdirectsound.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstwasapi.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstapetag.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gsticydemux.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstid3demux.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gsttcp.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstudp.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstsoup.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstcdio.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstrtp.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstrtsp.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstflac.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstwavparse.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstwavpack.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstogg.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstvorbis.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstopus.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstopusparse.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstspeex.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstlame.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstaiff.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstisomp4.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstasf.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstasfmux.dll
+          C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\gstlibav.dll
           ${GITHUB_WORKSPACE}/build/gstreamer-plugins/
 
       - name: Copy extra binaries
         working-directory: build
-        run: cp /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared/bin/{sqlite3.exe,killproc.exe,gst-launch-1.0.exe,gst-discoverer-1.0.exe} .
+        run: |
+          copy d:\a\strawberry\strawberry\sqlite-autoconf-3360000\sqlite3.exe
+          copy C:\gstreamer\1.0\msvc_x86_64\bin\gst-launch-1.0.exe
+          copy C:\gstreamer\1.0\msvc_x86_64\bin\gst-discoverer-1.0.exe
+
+      - name: Download copydlldeps.sh
+        shell: bash
+        working-directory: build
+        run: wget https://raw.githubusercontent.com/strawberrymusicplayer/strawberry-mxe/master/tools/copydlldeps.sh
 
       - name: Copy dependencies
+        shell: bash
         working-directory: build
         run: >
-          /usr/src/strawberry-mxe/tools/copydlldeps.sh
+          copydlldeps.sh
           -c
           -d .
           -F .
           -F ./platforms
           -F ./styles
-          -F ./imageformats
           -F ./tls
           -F ./sqldrivers
+          -F ./imageformats
           -F ./gstreamer-plugins
-          -R /usr/src/strawberry-mxe/usr/x86_64-w64-mingw32.shared
+          -R /d/a/strawberry/qt
+          -R /c/gstreamer/1.0/msvc_x86_64
 
       - name: Strip binaries
+        shell: bash
         working-directory: build
         run: find . -type f \( -iname \*.dll -o -iname \*.exe \) -exec /usr/src/strawberry-mxe/usr/bin/x86_64-w64-mingw32.shared-strip {} \;
 
       - name: Copy nsis files
         working-directory: build
-        run: cp ${GITHUB_WORKSPACE}/dist/windows/*.nsi ${GITHUB_WORKSPACE}/dist/windows/*.nsh ${GITHUB_WORKSPACE}/dist/windows/*.ico .
+        run: copy ${GITHUB_WORKSPACE}/dist/windows/*.nsi ${GITHUB_WORKSPACE}/dist/windows/*.nsh ${GITHUB_WORKSPACE}/dist/windows/*.ico .
 
       - name: Copy COPYING license file
         working-directory: build
-        run: cp ${GITHUB_WORKSPACE}/COPYING .
+        run: copy ${GITHUB_WORKSPACE}/COPYING .
 
-      - name: Build Windows installer
-        working-directory: build
-        run: makensis strawberry.nsi
-
-
-  upload-macos:
-    name: Upload macOS DMG
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs:
-      - build-macos-qt6
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - uses: actions/download-artifact@v2
-        with:
-          path: uploads
-      - name: Install SSH keys
-        uses: shimataro/ssh-key-action@v2
-        with:
-          known_hosts: ${{ secrets.KNOWN_HOSTS2 }}
-          key: ${{ secrets.SSH_KEY }}
-      - name: rsync
-        run: |
-          set -x
-          for i in $(find uploads -type f -name 'strawberry-*.dmg'); do
-            rsync -e "ssh -p 50220 -o StrictHostKeyChecking=no" -va $i travis@echoes.jkvinge.net:/home/travis/builds/macos/
-          done
-
-
-  build-freebsd:
-    name: Build FreeBSD
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1.2.0
-    - name: Build FreeBSD
-      id: build-freebsd
-      uses: vmactions/freebsd-vm@v0.1.5
-      with:
-        usesh: true
-        mem: 4096
-        prepare: pkg install -y git cmake pkgconf gettext-tools boost-libs glib gnutls qt5-core qt5-concurrent qt5-network qt5-sql qt5-dbus qt5-gui qt5-widgets qt5-buildtools qt5-linguisttools qt5-qmake qt5-sqldrivers-sqlite3 qt5-testlib sqlite gstreamer1 gstreamer1-plugins chromaprint protobuf protobuf-c taglib libcdio libmtp gdk-pixbuf2 libgpod fftw3 googletest iconv
-        run: |
-          cmake -E make_directory build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug
-          cmake --build . --config Debug --parallel 4
-          cd ..
-          rm -rf build
+      #- name: Build Windows installer
+      #  working-directory: build
+      #  run: makensis strawberry.nsi

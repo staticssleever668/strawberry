@@ -13,6 +13,11 @@ endif()
 
 protobuf_generate_cpp(PROTO_SOURCES PROTO_HEADERS ${MESSAGES})
 
+if(USE_TAGLIB AND TAGLIB_FOUND)
+  message("TAGLIB_INCLUDE_DIRS: ${TAGLIB_INCLUDE_DIRS}")
+  include_directories(${TAGLIB_INCLUDE_DIRS} ${TAGLIB_INCLUDE_DIR})
+endif()
+
 link_directories(
   ${GLIB_LIBRARY_DIRS}
   ${PROTOBUF_LIBRARY_DIRS}
@@ -50,7 +55,7 @@ target_link_libraries(libstrawberry-tagreader PRIVATE
 )
 
 if(USE_TAGLIB AND TAGLIB_FOUND)
-  target_include_directories(libstrawberry-tagreader SYSTEM PRIVATE ${TAGLIB_INCLUDE_DIRS})
+  target_include_directories(libstrawberry-tagreader SYSTEM PRIVATE ${TAGLIB_INCLUDE_DIRS} ${TAGLIB_INCLUDE_DIR})
   target_link_libraries(libstrawberry-tagreader PRIVATE ${TAGLIB_LIBRARIES})
 endif()
 
